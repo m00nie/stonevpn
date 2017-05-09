@@ -66,6 +66,7 @@ def main():
         pushrouter = section['pushrouter']
         cacertfile = section['cacertfile']
         cakeyfile = section['cakeyfile']
+        takeyfile = section['takeyfile']
         openvpnconf = section['openvpnconf']
         ccddir = section['ccddir']
         working = section['working']
@@ -281,6 +282,7 @@ def main():
     # values we got from parsing the configuration file:
     s.cacertfile    = cacertfile
     s.cakeyfile     = cakeyfile
+    s.takeyfile     = takeyfile
     s.openvpnconf   = openvpnconf
     s.ccddir        = ccddir
     s.working       = working
@@ -1130,6 +1132,9 @@ class StoneVPN:
                     f.write(section[var].replace('clientcertfile', self.fprefix + fname + '.crt') + '\n')
                 elif var == 'key':
                     f.write(section[var].replace('clientkeyfile', self.fprefix + fname + '.key') + '\n')
+                elif var == 'takey':
+                    takeyfilenopath = self.taketfile.split('/')[int(len(self.takeyfile.split('/')) - 1)]
+                    f.write(section[var].replace('takeyfile', takeyfilenopath) + '\n')
                 elif var == 'ip':
                     if self.server_ip:
                         f.write("remote " + str(self.server_ip) + "\n")
@@ -1143,6 +1148,9 @@ class StoneVPN:
                 fp.close ()
                 fp = open ( self.working + '/' + self.fprefix + fname + '.crt', 'r' )
                 f.write('\n' + "<cert>" + '\n' + fp.read() + "</cert>" + '\n')
+                fp.close ()
+                fp = open ( self.takeyfile, 'r' )
+                f.write('\n' + "<tls-auth>" + '\n' + fp.read() + "</tls-auth>" + '\n')
                 fp.close ()
                 fp = open ( self.working + '/' + self.fprefix + fname + '.key', 'r' )
                 f.write('\n' + "<key>" + '\n' + fp.read() + "</key>" + '\n')
